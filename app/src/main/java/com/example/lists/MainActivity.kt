@@ -60,6 +60,16 @@ class MainActivity : ComponentActivity() {
         Surface(color = Color.White) {
             Box(modifier = Modifier.fillMaxSize()) {
                 // TODO 5: Use a vertical list that composes and displays only the visible items.
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 80.dp)
+                ) {
+                    items(chiuitListState.value) { chiuit ->
+                        ChiuitListItem(chiuit)
+                    }
+                }
+
                 // TODO 6: Make use of Compose DSL to describe the content of the list and make sure
                 // to instantiate a [ChiuitListItem] for every item in [chiuitListState.value].
                 FloatingActionButton(
@@ -106,7 +116,7 @@ class MainActivity : ComponentActivity() {
     }
 
     /*
-    Defines text sharing/sending *implicit* intent, opens the application chooser menu,
+    Defines text sharing/sending implicit intent, opens the application chooser menu,
     and starts a new activity which supports sharing/sending text.
      */
     private fun shareChiuit(text: String) {
@@ -123,14 +133,14 @@ class MainActivity : ComponentActivity() {
     }
 
     /*
-    Defines an *explicit* intent which will be used to start ComposeActivity.
+    Defines an explicit intent which will be used to start ComposeActivity.
      */
     private fun composeChiuit() {
-            val intent = Intent(this, ComposeActivity::class.java).apply {
-                // Attach extra text data
-                putExtra(Intent.EXTRA_TEXT, "")
-                type = "text/plain"
-            }
+        val intent = Intent(this, ComposeActivity::class.java).apply {
+            // Attach extra text data
+            putExtra(Intent.EXTRA_TEXT, "")
+            type = "text/plain"
+        }
 
         resultLauncher.launch(intent)
 
@@ -141,7 +151,11 @@ class MainActivity : ComponentActivity() {
 
     private fun setChiuitText(resultText: String?) {
         // TODO 7: Check if text is not null or empty, instantiate a new chiuit object
-
+        if (!resultText.isNullOrBlank()) {
+            val newChiuit = Chiuit(description = resultText)
+            ChiuitStore.addChiuit(newChiuit)
+            chiuitListState.value = ChiuitStore.getAllData()
+        }
         //  then add it to the [chiuitListState.value].
 
     }
@@ -152,5 +166,3 @@ class MainActivity : ComponentActivity() {
         HomeScreen()
     }
 }
-
-
